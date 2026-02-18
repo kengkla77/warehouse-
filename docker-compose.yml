@@ -1,0 +1,34 @@
+version: '3.8'
+
+services:
+  mysql_db:
+    image: mysql:8.0
+    container_name: warehouse_db
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpassword123
+      MYSQL_DATABASE: warehouse_db
+      MYSQL_USER: warehouse_user
+      MYSQL_PASSWORD: userpassword123
+    ports:
+      - "3306:3306" 
+    volumes:
+      - mysql_data:/var/lib/mysql
+
+  next_app:
+    build: 
+      context: .
+      dockerfile: Dockerfile
+    container_name: warehouse_app
+    restart: always
+    ports:
+      - "3000:3000" 
+    environment:
+      - DATABASE_URL="mysql://root:root@localhost:3306/polyfoam_store"
+      - NEXTAUTH_URL=http://34.124.190.220
+      - NEXTAUTH_SECRET=my_super_secret_key_123
+    depends_on:
+      - mysql_db
+
+volumes:
+  mysql_data:
